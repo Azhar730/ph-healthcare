@@ -13,4 +13,4 @@ const globalErrorHandler = (
     error: err,
   });
 };
-export default globalErrorHandler;
+export default globalErrorHandler
