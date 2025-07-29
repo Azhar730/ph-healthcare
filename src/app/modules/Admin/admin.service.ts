@@ -2,8 +2,13 @@ import { Admin, Prisma, UserStatus } from "@prisma/client";
 import { adminSearchableFields } from "./admin.constant";
 import prisma from "../../../shared/prisma";
 import { paginationHelper } from "../../../helpars/paginationHelper";
+import { IAdminFilterRequest } from "./admin.interface";
+import { IPaginationOptions } from "../../interfaces/pagination";
 
-const getAllAdminFromDB = async (query: any, options: any) => {
+const getAllAdminFromDB = async (
+  query: IAdminFilterRequest,
+  options: IPaginationOptions
+) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = query;
   const andConditions: Prisma.AdminWhereInput[] = [];
@@ -22,13 +27,13 @@ const getAllAdminFromDB = async (query: any, options: any) => {
     andConditions.push({
       AND: Object.keys(filterData).map((key) => ({
         [key]: {
-          equals: filterData[key],
+          equals: (filterData as any)[key],
         },
       })),
     });
   }
   andConditions.push({ isDeleted: false });
-  
+
   const whereConditions: Prisma.AdminWhereInput = { AND: andConditions };
   const result = await prisma.admin.findMany({
     where: whereConditions,
@@ -103,7 +108,7 @@ const deleteAdminFromDB = async (id: string): Promise<Admin | null> => {
   });
   return result;
 };
-const softDeleteAdminFromDB = async (id: string):Promise<Admin| null> => {
+const softDeleteAdminFromDB = async (id: string): Promise<Admin | null> => {
   await prisma.admin.findUniqueOrThrow({
     where: {
       id,
@@ -136,5 +141,5 @@ export const AdminServices = {
   getSingleAdminFromDB,
   updateAdminIntoDB,
   deleteAdminFromDB,
-  softDeleteAdminFromDB
+  softDeleteAdminFromDB,
 };
