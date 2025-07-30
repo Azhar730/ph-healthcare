@@ -25,7 +25,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
       role: userData.role,
     },
     config.jwt.access_secret as Secret,
-    config.jwt.access_expires_in
+    config.jwt.access_expires_in as string
   );
   const refreshToken = JWTHelpers.generateToken(
     {
