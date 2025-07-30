@@ -2,6 +2,8 @@ import { UserStatus } from "@prisma/client";
 import prisma from "../../../shared/prisma";
 import bcrypt from "bcrypt";
 import { JWTHelpers } from "../../../helpars/jwtHelpers";
+import config from "../../../config";
+import { Secret } from "jsonwebtoken";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
@@ -22,8 +24,8 @@ const loginUser = async (payload: { email: string; password: string }) => {
       email: userData.email,
       role: userData.role,
     },
-    "abcdefgh",
-    "5m"
+    config.jwt.access_secret as Secret,
+    config.jwt.access_expires_in
   );
   const refreshToken = JWTHelpers.generateToken(
     {
